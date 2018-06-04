@@ -33,7 +33,6 @@ void stroke(FILE *in)
 
 int main(int argc, char *argv[])
 {
-
 	pid_t procid;
 	FILE *in;
 	int i;
@@ -52,5 +51,4 @@ int main(int argc, char *argv[])
 	stroke(in);
 
 	return 0;
-
 }
