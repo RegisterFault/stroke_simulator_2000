@@ -4,11 +4,14 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define READ_FILE "LICENSE"
 #define NUM_PROC 20
 #define BUFF 10
-#define USLEEP_MODULO 200000
+#define USLEEP_MODULO 400000
 
 void error(char *err)
 {
@@ -16,14 +19,15 @@ void error(char *err)
 	exit(1);
 }
 
-void stroke(FILE *in)
+void stroke(int infd)
 {
 	char buff[BUFF];
 	int num_read;
 
 	for (;;){
-		if ((num_read = fread(buff, 1, BUFF, in)) <= 0)
+		if ((num_read = read(infd, buff, BUFF)) <= 0){
 			exit(1);
+		}
 
 		fwrite(buff, 1, num_read, stdout);
 		usleep(rand() % USLEEP_MODULO);
@@ -34,21 +38,20 @@ void stroke(FILE *in)
 int main(int argc, char *argv[])
 {
 	pid_t procid;
-	FILE *in;
+	int infd;
 	int i;
-	
 	srand(time(NULL));
 
 	//file descriptor is preserved across all processes
-	if ((in = fopen(READ_FILE,"r+")) == NULL)
+	if ((infd = open(READ_FILE,O_RDONLY)) < 0)
 		error("file open fail");
 
 	//generate all the processes
 	for (i = 0; i < NUM_PROC; i++)
 		if (fork() != 0 )
 			break;
-	//run process-local routine	
-	stroke(in);
+	//run process-local routine
+	stroke(infd);
 
 	return 0;
 }
