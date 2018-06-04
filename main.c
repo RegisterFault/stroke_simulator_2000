@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < NUM_PROC; i++)
 		if (fork() != 0 )
 			break;
+
 	//run process-local routine
 	stroke(infd);
 
