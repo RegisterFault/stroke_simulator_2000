@@ -25,9 +25,8 @@ void stroke(int infd)
 	int num_read;
 
 	for (;;){
-		if ((num_read = read(infd, buff, BUFF)) <= 0){
+		if ((num_read = read(infd, buff, BUFF)) <= 0)
 			exit(1);
-		}
 
 		fwrite(buff, 1, num_read, stdout);
 		usleep(rand() % USLEEP_MODULO);
