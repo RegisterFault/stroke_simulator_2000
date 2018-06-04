@@ -8,7 +8,7 @@
 #define READ_FILE "LICENSE"
 #define NUM_PROC 20
 #define BUFF 10
-#define USLEEP_MODULO 400000
+#define USLEEP_MODULO 200000
 
 void error(char *err)
 {
@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 
 	//generate all the processes
 	for (i = 0; i < NUM_PROC; i++)
-		fork();
-
+		if (fork() != 0 )
+			break;
 	//run process-local routine	
 	stroke(in);
 
