@@ -15,6 +15,7 @@
 #define BUFF 10
 #define USLEEP_MODULO 400000
 #define USING_STDIN 1
+#define USING_DELAY 1
 
 
 void error(char *err)
@@ -32,10 +33,11 @@ static void * stroke(void *arg)
 	for (;;){
 		if ((num_read = read(infd, buff, BUFF)) <= 0)
 			pthread_exit(NULL);
-
-		usleep(rand() % USLEEP_MODULO);
+	
+		if (USING_DELAY)
+			usleep(rand() % USLEEP_MODULO);
 		sched_yield();
-		fwrite(buff, 1, num_read, stdout);
+		write(STDOUT_FILENO,buff,num_read);
 	}
 }
 

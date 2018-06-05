@@ -3,3 +3,6 @@ stroke: main.c
 
 clean:
 	rm stroke
+
+test: 
+	cat LICENSE | ./stroke 
