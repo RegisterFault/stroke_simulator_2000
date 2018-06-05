@@ -10,7 +10,7 @@
 #include <pthread.h>
 #include <sched.h>
 
-#define READ_FILE "foo.txt"
+#define READ_FILE "LICENSE"
 #define NUM_THREADS 20
 #define BUFF 10
 #define USLEEP_MODULO 400000
