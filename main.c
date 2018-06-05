@@ -7,11 +7,14 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pthread.h>
+#include <sched.h>
 
-#define READ_FILE "LICENSE"
-#define NUM_PROC 20
+#define READ_FILE "foo.txt"
+#define NUM_THREADS 20
 #define BUFF 10
 #define USLEEP_MODULO 400000
+
 
 void error(char *err)
 {
@@ -19,39 +22,46 @@ void error(char *err)
 	exit(1);
 }
 
-void stroke(int infd)
+static void * stroke(void *arg)
 {
+	int infd = *((int *) arg);
 	char buff[BUFF];
 	int num_read;
-
+	
 	for (;;){
 		if ((num_read = read(infd, buff, BUFF)) <= 0)
-			exit(1);
+			pthread_exit(NULL);
 
-		fwrite(buff, 1, num_read, stdout);
 		usleep(rand() % USLEEP_MODULO);
-		fflush(stdout);
+		sched_yield();
+		fwrite(buff, 1, num_read, stdout);
 	}
 }
 
 int main(int argc, char *argv[])
 {
-	pid_t procid;
 	int infd;
 	int i;
-	srand(time(NULL));
+	pthread_t tmp;
+	pthread_t tlist[NUM_THREADS];
+	pthread_t *tcursor = tlist;
 
-	//file descriptor is preserved across all processes
+	srand(time(NULL));
+	
+	//file descriptor is preserved across all threads
 	if ((infd = open(READ_FILE,O_RDONLY)) < 0)
 		error("file open fail");
 
-	//generate all the processes
-	for (i = 0; i < NUM_PROC; i++)
-		if (fork() != 0 )
-			break;
+	//generate all the threads
+	for (i=0; i<NUM_THREADS; i++){
+		pthread_create(&tmp, NULL,stroke,(void *)&infd);
+		*tcursor = tmp;
+		tcursor++;
+	}
 
-	//run process-local routine
-	stroke(infd);
+	//wait for all threads to exit
+	for(i=0; i<NUM_THREADS; i++)
+		pthread_join(tlist[i],NULL);
 
 	return 0;
 }
