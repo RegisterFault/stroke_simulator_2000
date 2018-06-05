@@ -14,6 +14,7 @@
 #define NUM_THREADS 20
 #define BUFF 10
 #define USLEEP_MODULO 400000
+#define USING_STDIN 1
 
 
 void error(char *err)
@@ -49,7 +50,9 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 	
 	//file descriptor is preserved across all threads
-	if ((infd = open(READ_FILE,O_RDONLY)) < 0)
+	if (USING_STDIN)
+		infd = STDIN_FILENO;
+	else if ((infd = open(READ_FILE,O_RDONLY)) < 0)
 		error("file open fail");
 
 	//generate all the threads
