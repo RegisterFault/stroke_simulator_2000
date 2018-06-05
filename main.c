@@ -37,6 +37,7 @@ static void * stroke(void *arg)
 		if (USING_DELAY)
 			usleep(rand() % USLEEP_MODULO);
 
+		//this scrambles the threads
 		sched_yield();
 		write(STDOUT_FILENO,buff,num_read);
 	}
