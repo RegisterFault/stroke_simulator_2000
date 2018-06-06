@@ -13,6 +13,3 @@ to run:
 
 The define constant READ_FILE is the input file, which by default is the LICENSE file in the pwd. 
 I was too lazy to do argument processing.
-
-Yes, I know time(NULL) is the plebian way to do PRNG seeding, but this isn't security critical nor are you going to get
-deterministic behavior in this program by setting a deterministic time anyways.
